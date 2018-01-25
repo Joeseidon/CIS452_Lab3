@@ -78,12 +78,15 @@ int main () {
     	//parent process
     	printf("Spawned child: PID# %i\n", pid);
     	child = pid;
-		printf("Waiting...  ");
+		/*printf("Waiting...  ");
+		fflush(stdout);*/
     	while(1){
     		//loop until ctrl-c
     	//	printf("Waiting...  ");
-    		pause();
 			printf("Waiting...  ");
+			fflush(stdout);
+    		pause();
+			//printf("Waiting...  ");
     	}
     
     }
@@ -91,6 +94,7 @@ int main () {
 }
 
 void signalOneHandler(int sigNum){
+	fflush(stdout);
 	printf(" received a SIGUSR1 signal\n");
 
 	/* Re-esstablish Signal Handler */
@@ -99,6 +103,7 @@ void signalOneHandler(int sigNum){
 }
 
 void signalTwoHandler(int sigNum){
+	fflush(stdout);
 	printf(" received a SIGUSR2 signal\n");
 
 	/* Re-esstablish Signal Handler */
@@ -111,7 +116,6 @@ void killfunc(int sigNum){
 }
 
 void closeSignalHandler (int sigNum) {
-    
 	pid_t p = getpid();
 	if(p==child){
 	/* Handle Clean-Up here */
@@ -119,7 +123,7 @@ void closeSignalHandler (int sigNum) {
     /* End of Clean-Up */
 	}else{
 	
-	printf (" ^C recieved.\n That's it, I'm shutting you down...\n");
+	printf ("^C received.\n That's it, I'm shutting you down...\n");
     exit (0);
 	}
 }
