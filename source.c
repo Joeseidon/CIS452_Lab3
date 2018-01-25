@@ -94,7 +94,7 @@ int main () {
 }
 
 void signalOneHandler(int sigNum){
-	fflush(stdout);
+	//fflush(stdout);
 	printf(" received a SIGUSR1 signal\n");
 
 	/* Re-esstablish Signal Handler */
@@ -103,7 +103,7 @@ void signalOneHandler(int sigNum){
 }
 
 void signalTwoHandler(int sigNum){
-	fflush(stdout);
+	//fflush(stdout);
 	printf(" received a SIGUSR2 signal\n");
 
 	/* Re-esstablish Signal Handler */
@@ -123,7 +123,7 @@ void closeSignalHandler (int sigNum) {
     /* End of Clean-Up */
 	}else{
 	
-	printf ("^C received.\n That's it, I'm shutting you down...\n");
+	printf (" received.\nThat's it, I'm shutting you down...\n");
     exit (0);
 	}
 }
