@@ -28,6 +28,7 @@ randomly send one of the user-defined signals to its parent
 void closeSignalHandler (int);
 void signalOneHandler (int);
 void signalTwoHandler (int);
+void killfunc(int);
 
 pid_t child = 0; //global for signal interrupts
 
@@ -50,8 +51,9 @@ int main () {
     else if(pid == 0){
     	//child process
     	srand(time(NULL));
+		
+		signal (SIGKILL, killfunc);
     	
-    	sleep (1);
     	while(1){
     		//loop and produce signals until ctrl-c
     		int randTime = rand() % 5; //generate random number 
@@ -67,7 +69,7 @@ int main () {
     		}else if(randSig == 1){
     			//raise signal two
     			kill(parentPID, SIGUSR2);
-    		}    		    		
+    		}  
     	}
     }
     
@@ -76,16 +78,15 @@ int main () {
     	//parent process
     	printf("Spawned child: PID# %i\n", pid);
     	child = pid;
+		printf("Waiting...  ");
     	while(1){
     		//loop until ctrl-c
-    		printf("Waiting...  ");
+    	//	printf("Waiting...  ");
     		pause();
+			printf("Waiting...  ");
     	}
     
     }
-
-    //printf ("waiting...\n");
-    //pause ();
     return 0;
 }
 
@@ -105,12 +106,20 @@ void signalTwoHandler(int sigNum){
 	return;
 }
 
+void killfunc(int sigNum){
+	exit(0);
+}
+
 void closeSignalHandler (int sigNum) {
-    printf (" ^C recieved.\n");
-    /* Handle Clean-Up here */
+    
+	pid_t p = getpid();
+	if(p==child){
+	/* Handle Clean-Up here */
 	kill(child, SIGKILL);
     /* End of Clean-Up */
-    sleep (1);
-    printf ("That's it, I'm shutting you down...\n");
+	}else{
+	
+	printf (" ^C recieved.\n That's it, I'm shutting you down...\n");
     exit (0);
+	}
 }
