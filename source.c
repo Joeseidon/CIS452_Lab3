@@ -1,3 +1,4 @@
+/*******************************************************************************
 - Initially prompts the user
 - 
 
@@ -21,14 +22,84 @@ randomly send one of the user-defined signals to its parent
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <string.h>
+#include <time.h>
 
 void closeSignalHandler (int);
+void signalOneHandler (int);
+void signalTwoHandler (int);
 
 int main () {
+
+    /* Assign Signal Handlers */
     signal (SIGINT, closeSignalHandler);
-    printf ("waiting...\n");
-    pause ();
+    signal (SIGUSR1, signalOneHandler);
+    signal (SIGUSR2, signalTwoHandler);
+    
+
+    /* Create Child Process */
+    pid_t pid, parentPID;
+    parentPID = getpid();
+    if((pid = fork()) < 0){
+    	perror("fork failed");
+    	exit(1);
+    }
+    
+    else if(pid == 0){
+    	//child process
+    	srand(time(NULL));
+    	
+    	sleep (1);
+    	while(1){
+    		//loop and produce signals until ctrl-c
+    		int randTime = rand() % 5; //generate random number 
+    		//random amount of time
+    		sleep (randTime);
+
+    		int randSig = rand() % 2; //generate random number 
+    		
+    		//raise signal for random number
+    		if(randSig == 0){
+    			//raise signal one
+    			kill(parentPID, SIGUSR1);
+    		}else if(randSig == 1){
+    			//raise signal two
+    			kill(parentPID, SIGUSR2);
+    		}    		    		
+    	}
+    }
+    
+    else{
+    	//parent process
+    	printf("Spawned child: PID# %i", pid);
+    	
+    	while(1){
+    		//loop until ctrl-c
+    		
+    		pause();
+    	}
+    
+    }
+
+    //printf ("waiting...\n");
+    //pause ();
     return 0;
+}
+
+void signalOneHandler(int sigNum){
+	printf(" received a SIGUSR1 signal\n");
+
+	/* Re-esstablish Signal Handler */
+	signal (SIGUSR1, signalOneHandler);
+	return;
+}
+
+void signalTwoHandler(int sigNum){
+	printf(" received a SIGUSR2 signal\n");
+
+	/* Re-esstablish Signal Handler */
+	signal (SIGUSR2, signalTwoHandler);
+	return;
 }
 
 void closeSignalHandler (int sigNum) {
