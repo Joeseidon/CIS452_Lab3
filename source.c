@@ -29,10 +29,12 @@ void closeSignalHandler (int);
 void signalOneHandler (int);
 void signalTwoHandler (int);
 
+pid_t child = 0; //global for signal interrupts
+
 int main () {
 
     /* Assign Signal Handlers */
-    signal (SIGINT, closeSignalHandler);
+    
     signal (SIGUSR1, signalOneHandler);
     signal (SIGUSR2, signalTwoHandler);
     
@@ -70,12 +72,13 @@ int main () {
     }
     
     else{
+		signal (SIGINT, closeSignalHandler);
     	//parent process
-    	printf("Spawned child: PID# %i", pid);
-    	
+    	printf("Spawned child: PID# %i\n", pid);
+    	child = pid;
     	while(1){
     		//loop until ctrl-c
-    		
+    		printf("Waiting...  ");
     		pause();
     	}
     
@@ -105,7 +108,7 @@ void signalTwoHandler(int sigNum){
 void closeSignalHandler (int sigNum) {
     printf (" ^C recieved.\n");
     /* Handle Clean-Up here */
-
+	kill(child, SIGKILL);
     /* End of Clean-Up */
     sleep (1);
     printf ("That's it, I'm shutting you down...\n");
