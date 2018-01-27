@@ -62,6 +62,7 @@ int main () {
 
     		int randSig = rand() % 2; //generate random number 
     		
+			fflush(stdout);
     		//raise signal for random number
     		if(randSig == 0){
     			//raise signal one
