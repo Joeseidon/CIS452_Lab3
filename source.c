@@ -44,8 +44,9 @@ int main () {
     else if(pid == 0){
     	//child process
     	srand(time(NULL));
-		
-		signal (SIGKILL, killfunc);
+	
+	//Assign kill function to child process so that parent can close it upon exit	
+	signal (SIGKILL, killfunc);
     	
     	while(1){
     		//loop and produce signals until ctrl-c
@@ -55,7 +56,7 @@ int main () {
 
     		int randSig = rand() % 2; //generate random number 
     		
-			fflush(stdout);
+		fflush(stdout);
     		//raise signal for random number
     		if(randSig == 0){
     			//raise signal one
@@ -68,19 +69,18 @@ int main () {
     }
     
     else{
-		signal (SIGINT, closeSignalHandler);
+	//Esstablish close signal handler for parent process only
+	signal (SIGINT, closeSignalHandler);
+
     	//parent process
     	printf("Spawned child: PID# %i\n", pid);
     	child = pid;
-		/*printf("Waiting...  ");
-		fflush(stdout);*/
+	
     	while(1){
     		//loop until ctrl-c
-    	//	printf("Waiting...  ");
-			printf("Waiting...  ");
-			fflush(stdout);
+		printf("Waiting...  ");
+		fflush(stdout);
     		pause();
-			//printf("Waiting...  ");
     	}
     
     }
@@ -88,7 +88,6 @@ int main () {
 }
 
 void signalOneHandler(int sigNum){
-	//fflush(stdout);
 	printf(" received a SIGUSR1 signal\n");
 
 	/* Re-esstablish Signal Handler */
@@ -97,7 +96,6 @@ void signalOneHandler(int sigNum){
 }
 
 void signalTwoHandler(int sigNum){
-	//fflush(stdout);
 	printf(" received a SIGUSR2 signal\n");
 
 	/* Re-esstablish Signal Handler */
@@ -112,12 +110,11 @@ void killfunc(int sigNum){
 void closeSignalHandler (int sigNum) {
 	pid_t p = getpid();
 	if(p==child){
-	/* Handle Clean-Up here */
-	kill(child, SIGKILL);
-    /* End of Clean-Up */
+		/* Handle Clean-Up here */
+		kill(child, SIGKILL);
+    		/* End of Clean-Up */
 	}else{
-	
-	printf (" received.\nThat's it, I'm shutting you down...\n");
-    exit (0);
+		printf (" received.\nThat's it, I'm shutting you down...\n");
+    		exit (0);
 	}
 }
