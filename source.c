@@ -1,21 +1,14 @@
 /*******************************************************************************
-- Initially prompts the user
-- 
-
  @author   - Joseph Cutino, Brendon Murthum
  @version  - Winter 2018 
 
-
-write a parent program that:
-installs signal handler(s) for the predefined user-defined signals (SIGUSR1/SIGUSR2)
-spawns off a child process
-when a user-defined signal is raised, it reports the type of signal sent
-note: it may be necessary to reinstall your signal handler after a signal is received
-terminates gracefully upon receiving a Control-C (i.e. the parent should notify the child to also stop gracefully)
-the child process should repeatedly:
-wait a random amount of time (e.g. one to five seconds)
-randomly send one of the user-defined signals to its parent
-
+This program installs signal handlers(s) for the user-defined signals (SIGUSR1/SIGUSR2).
+A child process is then created which will enter into an infinity loop. Within this loop
+it will wait for a random amount of time then randomly send either SIGUSR1 or SIGUSR2 to
+the parent process. The parent process will wait for the signal from the child, handle the 
+signal, re-esstablish the signal handler, then enter back into a wait state. At any point 
+the user can enter ctrl-c to exit the process. This action is handle by the parent process
+who will close the child process properly.
 *******************************************************************************/
 
 #include <stdio.h>
@@ -25,6 +18,7 @@ randomly send one of the user-defined signals to its parent
 #include <string.h>
 #include <time.h>
 
+//Function Prototypes
 void closeSignalHandler (int);
 void signalOneHandler (int);
 void signalTwoHandler (int);
@@ -34,8 +28,7 @@ pid_t child = 0; //global for signal interrupts
 
 int main () {
 
-    /* Assign Signal Handlers */
-    
+    /* Assign Signal Handlers */ 
     signal (SIGUSR1, signalOneHandler);
     signal (SIGUSR2, signalTwoHandler);
     
